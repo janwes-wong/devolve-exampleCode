@@ -20,6 +20,9 @@ import java.util.function.Consumer;
 @Component
 public class TaskJob {
 
+    /**
+     * 每隔10s发送消息
+     */
     @Scheduled(cron = "0/10 * * * * ?")
     public void sendMessage() {
         log.info(">>> ********** task job start **********");
