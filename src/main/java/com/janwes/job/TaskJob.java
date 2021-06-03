@@ -27,12 +27,7 @@ public class TaskJob {
     public void sendMessage() {
         log.info(">>> ********** task job start **********");
         CopyOnWriteArraySet<WebSocketService> socketServices = WebSocketService.getSocketServices();
-        socketServices.forEach(new Consumer<WebSocketService>() {
-            @Override
-            public void accept(WebSocketService webSocketService) {
-                webSocketService.getSession().getAsyncRemote().sendText("系统公告：长期使用电脑有害视力健康" + LocalDateTime.now().toString());
-            }
-        });
+        socketServices.forEach(webSocketService -> webSocketService.getSession().getAsyncRemote().sendText("系统公告：长期使用电脑有害视力健康" + LocalDateTime.now().toString()));
         log.info(">>> ********** task job end **********");
     }
 }
