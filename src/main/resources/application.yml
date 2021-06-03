@@ -1,0 +1,16 @@
+# 服务端口
+server:
+  port: 8888
+spring:
+  application:
+    # 应用服务名
+    name: websocket-chat
+# 日志配置
+logging:
+  # 日志输出
+  file:
+    name: log/${spring.application.name}.log
+  # 日志级别
+  level:
+    root: info
+    com.janwes: debug
