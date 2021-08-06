@@ -23,7 +23,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @Component
 @ServerEndpoint(value = "/websocket/{nickName}")
 public class WebSocketService {
-    // 用来存放每个客户端对应的MyWebSocket对象。
+    // 用来存放每个客户端对应的WebSocket对象。
     private static final CopyOnWriteArraySet<WebSocketService> SOCKET_SERVICES = new CopyOnWriteArraySet<>();
     // 用session作为key，保存用户信息
     private static final ConcurrentHashMap<Session, UserInfo> CONNECT_MAP = new ConcurrentHashMap<>();
