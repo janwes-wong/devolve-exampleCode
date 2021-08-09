@@ -7,8 +7,10 @@ import org.springframework.stereotype.Component;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
+import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Janwes
@@ -23,11 +25,24 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @Component
 @ServerEndpoint(value = "/websocket/{nickName}")
 public class WebSocketService {
-    // 用来存放每个客户端对应的WebSocket对象。
+    /**
+     * 用来存放每个客户端对应的WebSocket对象
+     */
     private static final CopyOnWriteArraySet<WebSocketService> SOCKET_SERVICES = new CopyOnWriteArraySet<>();
-    // 用session作为key，保存用户信息
+
+    /**
+     * 用session作为key，保存用户信息
+     */
     private static final ConcurrentHashMap<Session, UserInfo> CONNECT_MAP = new ConcurrentHashMap<>();
-    // 与某个客户端的连接会话，需要通过它来给客户端发送数据
+
+    /**
+     * 静态变量，用来记录当前在线连接数
+     */
+    private static final AtomicInteger ONLINE_COUNT = new AtomicInteger();
+
+    /**
+     * 与某个客户端的连接会话，需要通过它来给客户端发送数据
+     */
     private Session session;
 
     /**
@@ -79,16 +94,47 @@ public class WebSocketService {
         error.printStackTrace();
     }
 
+    //发送消息
+    public void sendMessage(Session session, String message) throws IOException {
+        if (session != null) {
+            synchronized (session) {
+                log.info("发送数据：" + message);
+                session.getBasicRemote().sendText(message);
+            }
+        }
+    }
+
     /**
      * 群发自定义消息
+     *
+     * @param message
      */
     public void broadcast(String message) {
-        for (WebSocketService socketService : SOCKET_SERVICES) {
-            // 同步发送消息(阻塞)
-            // this.session.getBasicRemote().sendText(message);
-            // 异步发送消息(非阻塞)
-            socketService.session.getAsyncRemote().sendText(message);
+        try {
+            for (WebSocketService socketService : SOCKET_SERVICES) {
+                // 同步发送消息(阻塞)
+                // this.session.getBasicRemote().sendText(message);
+                // 异步发送消息(非阻塞)
+                socketService.session.getAsyncRemote().sendText(message);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
+
+    /**
+     * 给指定用户发送信息
+     *
+     * @param nickname
+     * @param message
+     */
+    public void sendInfo(String nickname, String message) {
+        /*Session session = CONNECT_MAP.get(nickname);
+        try {
+            sendMessage(session, message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
     }
 
     public static CopyOnWriteArraySet<WebSocketService> getSocketServices() {
