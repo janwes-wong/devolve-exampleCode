@@ -38,7 +38,7 @@ public class WebSocketService {
     /**
      * 静态变量，用来记录当前在线连接数
      */
-    private static final AtomicInteger ONLINE_COUNT = new AtomicInteger();
+    private static final AtomicInteger ONLINE_COUNT = new AtomicInteger(0);
 
     /**
      * 与某个客户端的连接会话，需要通过它来给客户端发送数据
